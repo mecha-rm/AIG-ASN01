@@ -16,6 +16,9 @@ public struct Door
 
     // percentage of doors (0.0 - 1.0)
     public float percent;
+
+    // if the door open?
+    public bool open;
 }
 
 // manages all doors.

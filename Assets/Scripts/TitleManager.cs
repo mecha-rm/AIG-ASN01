@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// manager for the title screen.
+// TODO: disable start button when not available.
 public class TitleManager : MonoBehaviour
 {
     // field for inputting the file path.
@@ -37,7 +39,7 @@ public class TitleManager : MonoBehaviour
     }
 
     // called by the button in the scene to read the input field.
-    public void ReadInputFields()
+    public bool ReadInputFields()
     {
         // sets the file path and file.
         fileReader.SetFilePath(filePathInput.text);
@@ -46,17 +48,49 @@ public class TitleManager : MonoBehaviour
         // disables the confirm text.
         readDefaultText.gameObject.SetActive(false);
 
+        // checks if the file exists.
+        bool exists = fileReader.FileExists();
+
         // attempts to read the file.
-        if (fileReader.FileExists()) // file read
+        if (exists) // file read
         {
             readSucessText.gameObject.SetActive(true);
             readFailText.gameObject.SetActive(false);
         }
-        else // file not fou
+        else // file not found
         {
             readSucessText.gameObject.SetActive(false);
             readFailText.gameObject.SetActive(true);
         }
+
+        return exists;
+    }
+
+    // starts the game.
+    public void StartGame()
+    {
+        // checks if the file exists.
+        if (!fileReader.FileExists())
+            return;
+
+        // finds the loader.
+        GameLoader loader = FindObjectOfType<GameLoader>();
+
+        // no loader currently exists, so make one.
+        if(loader == null)
+        {
+            GameObject go = new GameObject();
+            loader = go.AddComponent<GameLoader>();
+        }
+
+        // save values to the loader.
+        loader.file = fileReader.file;
+        loader.filePath = fileReader.filePath;
+        loader.doors = fileReader.GenerateDoors();
+        loader.doorCount = 100;
+
+        // goes to the game scene.
+        SceneHelper.ChangeScene("GameScene");
     }
 
     // Update is called once per frame
