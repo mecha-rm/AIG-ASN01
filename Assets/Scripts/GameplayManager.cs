@@ -5,6 +5,9 @@ using UnityEngine;
 // the gameplay manager.
 public class GameplayManager : MonoBehaviour
 {
+    // the door objects.
+    [Header("Door")]
+
     // the list of doors.
     public List<Door> doors;
 
@@ -12,7 +15,10 @@ public class GameplayManager : MonoBehaviour
     public GameObject doorPrefab;
 
     // spacing.
-    public Vector2 spacing = new Vector2(5.0F, 5.0F);
+    public Vector2 spacing = new Vector2(1.0F, 1.0F);
+
+    // the parent for the door object.
+    public GameObject doorParent;
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +49,19 @@ public class GameplayManager : MonoBehaviour
                 return;
             }
         }
+
+        // tries to find the parent if it's not set.
+        if (doorParent == null)
+        {
+            // finds the door parent.
+            doorParent = GameObject.Find("Doors");
+
+            // makes a new object.
+            if (doorParent == null)
+                doorParent = new GameObject("Doors");
+
+        }
+            
 
         // loader exists, so grab information from there.
         if (loader != null)
@@ -75,12 +94,16 @@ public class GameplayManager : MonoBehaviour
         }
 
         // the row size.
-        int rowSize = Mathf.CeilToInt(Mathf.Sqrt(doorCount));
-        Vector2 doorPosOffset = spacing;
+        int rowLength = Mathf.CeilToInt(Mathf.Sqrt(doorCount));
+
+        // the current column in the row.
+        int rowIndex = 0;
+        int colIndex = 0;
 
         // generates all of the doors.
         for(int i = 0; i < doorCount; i++)
         {
+            // door object.
             GameObject doorObject = Instantiate(doorPrefab);
             Door door;
 
@@ -88,8 +111,57 @@ public class GameplayManager : MonoBehaviour
             if(!doorObject.TryGetComponent<Door>(out door))
                 door = doorObject.AddComponent<Door>();
 
-            // door.transform.position;
+            // DOOR SETTINGS
+            // TODO: add in door settings.
+
+            // TRANSFORM
+            // sets the parent transform
+            if (doorParent != null)
+            {
+                door.transform.parent = doorParent.transform;
+                door.transform.localPosition = Vector3.zero;
+            }
+
+            // creates the position offset.
+            Vector2 doorPosOffset = new Vector2(
+                spacing.x * door.transform.localScale.x * colIndex,
+                -spacing.y * door.transform.localScale.y * rowIndex
+                );
+
+            // moves the door to the right place.
+            door.transform.Translate(doorPosOffset);
+
+            // add door to list.
+            doors.Add(door);
+
+            // increase the column count
+            colIndex++;
+
+            // at the end of the row, so move onto the next row.
+            if(colIndex >= rowLength)
+            {
+                rowIndex++;
+                colIndex = 0;
+            }            
         }
+
+        // TODO: option to scale down doors.
+        // scale down all doors
+        // if(doorParent != null)
+        // {
+        //     if(doorCount > 128)
+        //     {
+        // 
+        //     }
+        //     else if (doorCount > 96)
+        //     {
+        // 
+        //     }
+        //     else if (doorCount > 64)
+        //     {
+        // 
+        //     }
+        // }
     }
 
     // Update is called once per frame
