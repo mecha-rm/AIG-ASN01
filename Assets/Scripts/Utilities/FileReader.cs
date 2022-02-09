@@ -97,7 +97,7 @@ public class FileReader : MonoBehaviour
     }
 
     // generates the doors from the saved lines.
-    public List<Door> GenerateDoors()
+    public List<DoorEntry> GenerateDoors()
     {
         // checking for lines to read from.
         bool valid = lines != null;
@@ -127,7 +127,7 @@ public class FileReader : MonoBehaviour
 
 
         // makes list of doors.
-        List<Door> doors = new List<Door>();
+        List<DoorEntry> doors = new List<DoorEntry>();
 
         // goes through all lines, skipping the first line since it's the header.
         for(int i = 1; i < lines.Length; i++)
@@ -137,7 +137,7 @@ public class FileReader : MonoBehaviour
             // the string should have four elements.
             if(str.Length == 4)
             {
-                Door door = new Door(); // makes a new door.
+                DoorEntry door = new DoorEntry(); // makes a new door.
 
                 door.hot = (str[0] == "Y"); // is the door hot?
                 door.noisy = (str[1] == "Y"); // is noisy being heard from behind the door?

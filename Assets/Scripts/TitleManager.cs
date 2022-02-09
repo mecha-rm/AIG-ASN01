@@ -86,8 +86,8 @@ public class TitleManager : MonoBehaviour
         // save values to the loader.
         loader.file = fileReader.file;
         loader.filePath = fileReader.filePath;
-        loader.doors = fileReader.GenerateDoors();
-        loader.doorCount = 100;
+        loader.doorsEntries = fileReader.GenerateDoors();
+        loader.doorCount = 36;
 
         // goes to the game scene.
         SceneHelper.ChangeScene("GameScene");

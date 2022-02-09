@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// the door
-public struct Door
+// the door entry
+public struct DoorEntry
 {
     // if 'true', the door is hot.
     public bool hot;
@@ -16,16 +16,22 @@ public struct Door
 
     // percentage of doors (0.0 - 1.0)
     public float percent;
-
-    // if the door open?
-    public bool open;
 }
 
-// manages all doors.
-public class DoorManager : MonoBehaviour
+// a door object for the game. 
+public class Door : MonoBehaviour
 {
-    // the list of doors.
-    public List<Door> doors;
+    // if 'true', the door is hot.
+    public bool hot;
+
+    // if 'true', noise is heard behind the door.
+    public bool noisy;
+
+    // if 'true', the door is safe. If 'false', it's not safe.
+    public bool safe;
+
+    // if 'true', the door is open.
+    public bool open;
 
     // Start is called before the first frame update
     void Start()

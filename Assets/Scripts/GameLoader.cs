@@ -12,7 +12,7 @@ public class GameLoader : MonoBehaviour
     public string filePath = "Assets\\Resources\\Imports";
 
     // the list of doors.
-    public List<Door> doors = new List<Door>();
+    public List<DoorEntry> doorsEntries = new List<DoorEntry>();
 
     // the total amount of doors.
     public int doorCount = 0;
