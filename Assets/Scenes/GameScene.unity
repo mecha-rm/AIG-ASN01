@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 395559851}
   - component: {fileID: 395559850}
   m_Layer: 5
-  m_Name: Quit Button
+  m_Name: Return to Title Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -155,7 +155,7 @@ RectTransform:
   m_Children:
   - {fileID: 749782531}
   m_Father: {fileID: 2113953494}
-  m_RootOrder: 1
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -205,7 +205,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 395559851}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1866853296}
+        m_TargetAssemblyTypeName: GameplayManager, Assembly-CSharp
+        m_MethodName: ReturnToTitle
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &395559851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,7 +287,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2113953494}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -734,7 +746,7 @@ RectTransform:
   - {fileID: 1898987681}
   - {fileID: 1003409181}
   m_Father: {fileID: 2113953494}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -772,7 +784,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2113953494}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1030,6 +1042,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouse: {fileID: 0}
+  file: 
+  filePath: 
   doorsOpenedText: {fileID: 1347535957}
   hotText: {fileID: 1898987683}
   noisyText: {fileID: 1003409183}
@@ -1037,8 +1051,10 @@ MonoBehaviour:
   loseText: {fileID: 1902650967}
   doors: []
   unsafeDoors: []
-  openedDoors: 0
+  doorsOpened: 0
+  unsafeDoorsOpened: 0
   doorPrefab: {fileID: 4476652809773136985, guid: 3c908cd86e8793d41bf878507ef88a0a, type: 3}
+  explosionPrefab: {fileID: 7254726503394123096, guid: 0a465f1050de0d44d8b261fe49b6f045, type: 3}
   spacing: {x: 1, y: 1}
   doorParent: {fileID: 1875776300}
 --- !u!114 &1866853297

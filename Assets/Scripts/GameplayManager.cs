@@ -9,6 +9,12 @@ public class GameplayManager : MonoBehaviour
     // the mouse from the gameplay manager.
     public Mouse2D mouse;
 
+    // the file is set.
+    public string file = "";
+
+    // the file is not set.
+    public string filePath = "";
+
     // user interface
     [Header("UI")]
 
@@ -30,6 +36,9 @@ public class GameplayManager : MonoBehaviour
     // the door objects.
     [Header("Door")]
 
+    // default door amount.
+    private int defaultDoorCount = 36;
+
     // the list of doors.
     public List<Door> doors;
 
@@ -38,10 +47,16 @@ public class GameplayManager : MonoBehaviour
     public List<Door> unsafeDoors = new List<Door>();
 
     // the amount of doors that have been opened.
-    public int openedDoors;
+    public int doorsOpened = 0;
+
+    // the amount of unsafe doors that have been opened.
+    public int unsafeDoorsOpened = 0;
 
     // the prefab for the door.
     public GameObject doorPrefab;
+
+    // the prefab for the explosion.
+    public GameObject explosionPrefab;
 
     // spacing.
     public Vector2 spacing = new Vector2(1.0F, 1.0F);
@@ -114,7 +129,7 @@ public class GameplayManager : MonoBehaviour
         {
             // 6 X 6
             if(doorCount <= 0)
-                doorCount = 36;
+                doorCount = defaultDoorCount;
 
             // random door entries (8 options possible).
             if(doorEntries.Count == 0)
@@ -134,10 +149,12 @@ public class GameplayManager : MonoBehaviour
 
         }
 
+        // TODO: randomize entry positions.
+
         // the sum of all the percents
         float percentSum = 0.0F;
 
-        // adds together all of the percentages for probbility distribution.
+        // adds together all of the percentages for probability distribution.
         foreach (DoorEntry entry in doorEntries)
             percentSum += entry.percent;
 
@@ -214,23 +231,132 @@ public class GameplayManager : MonoBehaviour
             }            
         }
 
-        // TODO: option to scale down doors.
-        // scale down all doors
-        // if(doorParent != null)
-        // {
-        //     if(doorCount > 128)
-        //     {
-        // 
-        //     }
-        //     else if (doorCount > 96)
-        //     {
-        // 
-        //     }
-        //     else if (doorCount > 64)
-        //     {
-        // 
-        //     }
-        // }
+        // scale down all doors (default count is 32)
+        if(doorParent != null)
+        {
+            Vector3 scaleMult = Vector3.one;
+
+            if (doorCount > 192) // 192 doors
+            {
+                scaleMult = new Vector3(0.6F, 0.6F, 1.0F);
+            }
+            else if(doorCount > 160) // 160 doors
+            {
+                scaleMult = new Vector3(0.6F, 0.6F, 1.0F);
+            }
+            if(doorCount > 128) // 128 doors
+            {
+                scaleMult = new Vector3(0.8F, 0.8F, 1.0F);
+            }
+            else if (doorCount > 96) // 96 doors
+            {
+                scaleMult = new Vector3(0.8F, 0.8F, 1.0F);
+            }
+            else if (doorCount > 64) // 64 doors
+            {
+                scaleMult = new Vector3(1.0F, 1.0F, 1.0F);
+            }
+
+            doorParent.transform.localScale.Scale(scaleMult);
+        }
+
+        // destroys the loader.
+        if(loader != null)
+            Destroy(loader.gameObject);
+    }
+
+    // a hot door was opened.
+    // NOTE: I was not able to get this working, but it was supposed to open up adjacent doors.
+    private void OnOpenedHotDoor(Door openedDoor)
+    {
+        // explosion prefab not set.
+        if(explosionPrefab == null)
+        {
+            // loads the prefab.
+            explosionPrefab = (GameObject)Resources.Load("Prefabs/Explosion");
+        }
+
+        // no prefab was found, so no explosion.
+        if (explosionPrefab == null)
+            return;
+
+        // instantiates the object.
+        GameObject newObject = Instantiate(explosionPrefab);
+
+        // explosion component.
+        Explosion explosion = null;
+
+        // tries to get the component.
+        if (!newObject.TryGetComponent<Explosion>(out explosion))
+            explosion = newObject.AddComponent<Explosion>();
+
+        // sets position.
+        explosion.transform.position = openedDoor.transform.position;
+
+        // QUICK FIX - manually open doors.
+        // This doesn't match up with edge cases.
+        {
+            // finds the index of the opened door.
+            int index = doors.IndexOf(openedDoor);
+
+            // the doors hit.
+            List<Door> hitDoors = new List<Door>();
+
+            // left
+            if(index - 1 > 0)
+            {
+                hitDoors.Add(doors[index - 1]);
+            }
+
+            // right
+            if (index + 1 < doors.Count)
+            {
+                hitDoors.Add(doors[index + 1]);
+            }
+
+            // opens the doors.
+            foreach(Door hitDoor in hitDoors)
+            {
+                // door isn't open, so open it.
+                if (!hitDoor.open)
+                {
+                    // opens the door, and increments the opened door counter.
+                    hitDoor.OpenDoor();
+                    doorsOpened++;
+
+                    // if the door was unsafe to open, you don't get a gameover, but it does open.
+                    if (!hitDoor.safe)
+                        unsafeDoorsOpened++;
+                }
+            }
+            
+        }
+    }
+
+    // a noisy door as opened.
+    private void OnOpenedNoisyDoor(Door openedDoor)
+    {
+        // opens 1 to 5 random doors.
+        int randNum = Random.Range(1, 6);
+        randNum *= (Mathf.CeilToInt((float)doors.Count / defaultDoorCount));
+
+        // opens up random doors.
+        for(int i = 0; i < randNum; i++)
+        {
+            int index = Random.Range(0, doors.Count);
+
+            // door isn't open, so open it.
+            if(!doors[index].open)
+            {
+                // opens the door, and increments the opened door counter.
+                doors[index].OpenDoor();
+                doorsOpened++;
+
+                // if the door was unsafe to open, you don't get a gameover, but it does open.
+                if (!doors[index].safe)
+                    unsafeDoorsOpened++;
+            }
+        }
     }
 
     // called for a game over.
@@ -269,12 +395,30 @@ public class GameplayManager : MonoBehaviour
                 if(!door.open)
                 {
                     // opens the door, and increments the opened door counter.
-                    door.OpenDoor(true);
-                    openedDoors++;
+                    door.OpenDoor();
+                    doorsOpened++;
 
                     // the door was not safe, so the player got a game over.
                     if (!door.safe)
+                    {
+                        unsafeDoorsOpened++;
                         GameOver(false);
+                    }
+                    else // only triggered if the door is safe.
+                    {
+                        // if the door is hot.
+                        if (door.hot)
+                        {
+                            OnOpenedHotDoor(door);
+                        }
+
+                        // if the door is noisy.
+                        if (door.noisy)
+                        {
+                            OnOpenedNoisyDoor(door);
+                        }
+                    }
+                    
                 }
             }
 
@@ -303,11 +447,11 @@ public class GameplayManager : MonoBehaviour
         }
 
         // if there are no safe doors left.
-        if (unsafeDoors.Count == doors.Count)
+        if ((doors.Count - unsafeDoors.Count) <= (doorsOpened - unsafeDoorsOpened))
             GameOver(true);
 
 
         // doors opened text.
-        doorsOpenedText.text = openedDoors.ToString() + "/" + doors.Count.ToString();
+        doorsOpenedText.text = doorsOpened.ToString() + "/" + doors.Count.ToString();
     }
 }

@@ -72,7 +72,14 @@ public class Door : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // triggered by an explosion, so it can't kill the player.
-        OpenDoor(false);
+        OpenDoor();
+    }
+
+    // called for 2D trigger collisions.
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // triggered by an explosion, so it can't kill the player.
+        OpenDoor();
     }
 
     // sets the door with an entry.
@@ -84,12 +91,11 @@ public class Door : MonoBehaviour
     }
 
     // opens the door. If 'directOpen' is 'true', then the door was opened directly by the player.
-    public void OpenDoor(bool directOpen)
+    public void OpenDoor()
     {
         // door is already open, so do nothing.
         if (open)
             return;
-
 
         open = true;
 

@@ -106,6 +106,10 @@ public class FileReader : MonoBehaviour
         if (!valid)
             ReadFile();
 
+        // if the line object exists, but nothing has been read yet.
+        if (valid && lines.Length == 0)
+            ReadFile();
+
         valid = lines != null;
 
         // are there lines to possibly read?
