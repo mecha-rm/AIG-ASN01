@@ -23,36 +23,44 @@ public struct DoorEntry
 public class Door : MonoBehaviour
 {
     // if 'true', the door is hot.
-    public bool hot;
+    public bool hot = false;
 
     // if 'true', noise is heard behind the door.
-    public bool noisy;
+    public bool noisy = false;
 
     // if 'true', the door is safe. If 'false', it's not safe.
-    public bool safe;
+    public bool safe = true;
 
     // if 'true', the door is open.
-    public bool open;
+    public bool open = false;
 
     [Header("Sprites")]
     // sprite for a closed door
-    public Sprite closedDoor;
+    public SpriteRenderer closedSprite;
 
     // sprite for an open door.
-    public Sprite openDoor;
+    public SpriteRenderer openSprite;
 
     [Header("Other")]
 
     // the gameplay manager for the object.
     GameplayManager manager;
 
+    // the collider for the door.
+    // Collider2D collider;
+
     // Start is called before the first frame update
     void Start()
     {
         // TODO: search for door.
-        if(closedDoor == null || openDoor == null)
+        if(closedSprite == null || openSprite == null)
         {
+            SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>();
 
+            // sets closed sprites tofirst sprite.
+            closedSprite = sprites[0];
+            openSprite = sprites[1];
+            
         }
 
         // finds the gameplay manager.
@@ -63,11 +71,31 @@ public class Door : MonoBehaviour
     // called when the door is collided with.
     private void OnTriggerEnter(Collider other)
     {
-        
+        // triggered by an explosion, so it can't kill the player.
+        OpenDoor(false);
     }
 
-    public void OpenDoor()
+    // sets the door with an entry.
+    public void SetDoor(DoorEntry entry)
     {
+        hot = entry.hot;
+        noisy = entry.noisy;
+        safe = entry.safe;
+    }
+
+    // opens the door. If 'directOpen' is 'true', then the door was opened directly by the player.
+    public void OpenDoor(bool directOpen)
+    {
+        // door is already open, so do nothing.
+        if (open)
+            return;
+
+
+        open = true;
+
+        // toggle sprites.
+        closedSprite.gameObject.SetActive(false);
+        openSprite.gameObject.SetActive(true);
 
     }
 
